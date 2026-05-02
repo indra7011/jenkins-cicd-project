@@ -5,7 +5,7 @@ pipeline {
         IMAGE_NAME = 'my-project-image'
         TAR_FILE = 'my-project-image.tar'
         // ENSURE THIS IS YOUR PRODUCTION SERVER PRIVATE IP
-        PROD_SERVER_IP = '172.31.43.253' 
+        PROD_SERVER_IP = '172.31.39.150' 
         PROD_USER = 'ubuntu'
         SSH_CRED_ID = 'prod-server-ssh-key' 
     }
