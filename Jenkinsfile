@@ -25,7 +25,7 @@ pipeline {
 
         stage('3. Prepare Deployment Artifacts') {
             steps {
-                // Save the image and keep the YAML files ready
+                // Fixed: Added the > to ensure the image is saved to the file
                 sh "docker save ${IMAGE_NAME}:latest > ${TAR_FILE}"
             }
         }
@@ -35,21 +35,18 @@ pipeline {
                 sshagent(credentials: ["${SSH_CRED_ID}"]) {
                     script {
                         echo 'Transferring image and YAML files...'
-                        // Transfer the tarball AND the kubernetes manifests
                         sh "scp -o StrictHostKeyChecking=no ${TAR_FILE} deployment.yaml service.yaml ${PROD_USER}@${PROD_SERVER_IP}:/home/${PROD_USER}/"
                         
                         echo 'Updating Kubernetes Cluster...'
                         sh """
                         ssh -o StrictHostKeyChecking=no ${PROD_USER}@${PROD_SERVER_IP} "
-                            # Load the image into Minikube
-                            minikube image load ${IMAGE_NAME}:latest
+                            # Using absolute paths so SSH can find the commands
+                            /usr/local/bin/minikube image load ${IMAGE_NAME}:latest
                             
-                            # Apply the new configurations
-                            kubectl apply -f deployment.yaml
-                            kubectl apply -f service.yaml
+                            /usr/local/bin/kubectl apply -f deployment.yaml
+                            /usr/local/bin/kubectl apply -f service.yaml
                             
-                            # Force a rollout restart to ensure the new image is used
-                            kubectl rollout restart deployment/my-app-deployment
+                            /usr/local/bin/kubectl rollout restart deployment/my-app-deployment
                         "
                         """
                     }
