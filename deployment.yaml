@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+spec:
+  replicas: 2 # This runs TWO copies for reliability!
+  selector:
+    matchLabels:
+      app: my-python-app
+  template:
+    metadata:
+      labels:
+        app: my-python-app
+    spec:
+      containers:
+      - name: python-app
+        image: my-project-image:latest
+        imagePullPolicy: Never # Since we build it locally
+        ports:
+        - containerPort: 80
